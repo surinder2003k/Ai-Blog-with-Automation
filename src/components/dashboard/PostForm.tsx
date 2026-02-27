@@ -109,12 +109,18 @@ export function PostForm({ initialData, isEditing = false }: PostFormProps) {
         try {
             const result = await generateBlogPost(aiPrompt)
             if (result.success && result.data) {
-                const { title, content, excerpt, category, tags } = result.data
+                const { title, content, excerpt, category, tags, imageSearchKeyword } = result.data
                 form.setValue("title", title)
                 form.setValue("content", content)
                 form.setValue("excerpt", excerpt)
                 if (category) form.setValue("category", category)
                 if (tags) form.setValue("tags", tags.join(', '))
+
+                // Auto-populate image using the AI-suggested keyword
+                const salt = Math.floor(Math.random() * 1000);
+                const keyword = imageSearchKeyword || category || "tech";
+                const aiImageUrl = `https://loremflickr.com/1200/600/${keyword.split(' ')[0]},${salt}`;
+                form.setValue("image", aiImageUrl)
 
                 toast.success("AI Content generated! Review and edit before saving.")
             } else {

@@ -66,11 +66,12 @@ export async function automateTrendingPosts() {
                     continue;
                 }
 
-                // Image Strategy: Using loremflickr for reliable keyword-based images
+                // Image Strategy: Using loremflickr with AI keyword and random salt for variety
                 const category = blogData.category || "Tech";
-                const keyword = CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS.Default;
-                // Using loremflickr which is a reliable free alternative to deprecated source.unsplash
-                blogData.image = `https://loremflickr.com/1200/600/${keyword.split(',')[0]}`;
+                const aiKeyword = blogData.imageSearchKeyword || category;
+                const salt = Math.floor(Math.random() * 1000);
+                // Combine AI keyword with salt to ensure variety even for similar topics
+                blogData.image = `https://loremflickr.com/1200/600/${aiKeyword.split(' ')[0]},${salt}`;
 
                 // Create post with a system author
                 const post = await Post.create({

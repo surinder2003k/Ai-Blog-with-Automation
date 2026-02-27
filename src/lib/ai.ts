@@ -18,7 +18,8 @@ export async function generateBlogPost(userPrompt: string) {
     "content": "Full markdown content (800-1500 words). Use markdown headings, lists, and formatting. Include a mix of English and Hindi where natural.",
     "excerpt": "A short, catchy summary of the post (max 160 characters).",
     "category": "One suitable category (e.g., Tech, Lifestyle, Coding, Travel)",
-    "tags": ["tag1", "tag2", "tag3", "tag4"]
+    "tags": ["tag1", "tag2", "tag3", "tag4"],
+    "imageSearchKeyword": "A precise English keyword for finding a professional image (e.g., 'artificial intelligence laboratory', 'minimalist workspace')"
   }
 
   Important: Return ONLY the JSON object, no other text or explanation. Ensure the JSON is valid.`;
