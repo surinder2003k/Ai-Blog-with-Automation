@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath /*, revalidateTag */ } from 'next/cache';
 import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
 import { z } from 'zod';
@@ -35,7 +35,7 @@ export async function createPost(data: z.infer<typeof PostSchema>) {
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
-    revalidateTag('posts');
+    // revalidateTag('posts');
 
     return { success: true, data: JSON.parse(JSON.stringify(post)) };
 }
@@ -59,7 +59,7 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
 
     revalidatePath(`/blog/${slug}`);
     revalidatePath('/dashboard/posts');
-    revalidateTag('posts');
+    // revalidateTag('posts');
 
     return { success: true, data: JSON.parse(JSON.stringify(post)) };
 }
@@ -74,7 +74,7 @@ export async function deletePost(id: string) {
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
-    revalidateTag('posts');
+    // revalidateTag('posts');
 
     return { success: true };
 }
@@ -89,7 +89,7 @@ export async function togglePublish(id: string, published: boolean) {
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
-    revalidateTag('posts');
+    // revalidateTag('posts');
 
     return { success: true };
 }
