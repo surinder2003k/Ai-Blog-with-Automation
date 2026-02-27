@@ -48,7 +48,7 @@ const formSchema = z.object({
     image: z.string().url().optional().or(z.literal('')),
     category: z.string().min(1, "Category is required"),
     tags: z.string(),
-    published: z.boolean().default(false),
+    published: z.boolean(),
 })
 
 interface PostFormProps {
@@ -65,7 +65,8 @@ export function PostForm({ initialData, isEditing = false }: PostFormProps) {
         resolver: zodResolver(formSchema),
         defaultValues: initialData ? {
             ...initialData,
-            tags: initialData.tags.join(', ')
+            tags: initialData.tags?.join(', ') || "",
+            published: !!initialData.published,
         } : {
             title: "",
             content: "",
