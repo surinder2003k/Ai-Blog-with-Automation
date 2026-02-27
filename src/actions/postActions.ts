@@ -74,7 +74,7 @@ export async function deletePost(id: string) {
     await dbConnect();
     await Post.findOneAndDelete({
         _id: id,
-        authorId: { $in: [userId, "system-ai-automated"] }
+        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
     });
 
     revalidatePath('/');
@@ -93,7 +93,7 @@ export async function togglePublish(id: string, published: boolean) {
     await Post.findOneAndUpdate(
         {
             _id: id,
-            authorId: { $in: [userId, "system-ai-automated"] }
+            authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
         },
         { published }
     );
@@ -136,10 +136,10 @@ export async function getDashboardStats() {
 
     await dbConnect();
     const total = await Post.countDocuments({
-        authorId: { $in: [userId, "system-ai-automated"] }
+        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
     });
     const published = await Post.countDocuments({
-        authorId: { $in: [userId, "system-ai-automated"] },
+        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] },
         published: true
     });
     const drafts = total - published;
