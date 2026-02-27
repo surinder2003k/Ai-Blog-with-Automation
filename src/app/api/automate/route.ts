@@ -8,8 +8,11 @@ export async function GET(request: Request) {
     const cronSecret = process.env.CRON_SECRET || "aiblog-secret-123";
 
     if (authHeader !== `Bearer ${cronSecret}` && token !== cronSecret) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        console.error("Automation Unauthorized: Token mismatch.");
+        return NextResponse.json({ error: "Unauthorized", status: "Secret mismatch or missing" }, { status: 401 });
     }
+
+    console.log("Automation Triggered successfully.");
 
     try {
         const result = await automateTrendingPosts();

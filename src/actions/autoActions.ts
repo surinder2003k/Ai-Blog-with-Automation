@@ -66,12 +66,11 @@ export async function automateTrendingPosts() {
                     continue;
                 }
 
-                // Image Strategy: Using Unsplash Source for randomness based on keywords
+                // Image Strategy: Using loremflickr for reliable keyword-based images
                 const category = blogData.category || "Tech";
                 const keyword = CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS.Default;
-                // Using a timestamp and topic to ensure a unique-ish image per run
-                const salt = Math.floor(Math.random() * 1000);
-                blogData.image = `https://source.unsplash.com/featured/1200x600?${keyword},${salt}`;
+                // Using loremflickr which is a reliable free alternative to deprecated source.unsplash
+                blogData.image = `https://loremflickr.com/1200/600/${keyword.split(',')[0]}`;
 
                 // Create post with a system author
                 const post = await Post.create({
