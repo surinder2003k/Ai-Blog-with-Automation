@@ -1,11 +1,30 @@
 'use server';
 
-import { revalidatePath /*, revalidateTag */ } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
 import { z } from 'zod';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import slugify from 'slugify';
+import { isMasterAdmin } from './adminAuth';
+
+const ADMIN_USER_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+
+// Safely get current Clerk userId (null if no Clerk session)
+async function getAuthUser(): Promise<string | null> {
+    try {
+        const { userId } = await auth();
+        return userId;
+    } catch {
+        return null;
+    }
+}
+
+async function checkAdmin(userId: string | null): Promise<boolean> {
+    const isMaster = await isMasterAdmin();
+    if (isMaster) return true;
+    return !!(userId && userId === ADMIN_USER_ID);
+}
 
 export async function getAuthorNames(authorIds: string[]) {
     const uniqueIds = [...new Set(authorIds)].filter(id =>
@@ -46,18 +65,8 @@ const PostSchema = z.object({
     published: z.boolean().default(false),
 });
 
-const ADMIN_USER_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-
-import { isMasterAdmin } from './adminAuth';
-
-async function checkAdmin(userId: string | null) {
-    const isMaster = await isMasterAdmin();
-    if (isMaster) return true;
-    return userId && userId === ADMIN_USER_ID;
-}
-
 export async function createPost(data: z.infer<typeof PostSchema>) {
-    const { userId } = await auth();
+    const userId = await getAuthUser();
     if (!userId) throw new Error("Unauthorized");
 
     await dbConnect();
@@ -74,16 +83,17 @@ export async function createPost(data: z.infer<typeof PostSchema>) {
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
-    // revalidateTag('posts');
 
     return { success: true, data: JSON.parse(JSON.stringify(post)) };
 }
 
 export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
+    const userId = await getAuthUser();
     const isAdmin = await checkAdmin(userId);
+
+    // Must be admin or have a Clerk session
+    if (!isAdmin && !userId) throw new Error("Unauthorized");
+
     await dbConnect();
 
     const validatedData = PostSchema.parse(data);
@@ -103,18 +113,20 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
     if (!post) throw new Error("Post not found or unauthorized");
 
     revalidatePath(`/blog/${slug}`);
+    revalidatePath('/');
+    revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
     revalidatePath('/dashboard/admin/posts');
-    // revalidateTag('posts');
 
     return { success: true, data: JSON.parse(JSON.stringify(post)) };
 }
 
 export async function deletePost(id: string) {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
+    const userId = await getAuthUser();
     const isAdmin = await checkAdmin(userId);
+
+    if (!isAdmin && !userId) throw new Error("Unauthorized");
+
     await dbConnect();
 
     const query: any = { _id: id };
@@ -128,16 +140,16 @@ export async function deletePost(id: string) {
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
     revalidatePath('/dashboard/admin/posts');
-    // revalidateTag('posts');
 
     return { success: true };
 }
 
 export async function togglePublish(id: string, published: boolean) {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
+    const userId = await getAuthUser();
     const isAdmin = await checkAdmin(userId);
+
+    if (!isAdmin && !userId) throw new Error("Unauthorized");
+
     await dbConnect();
 
     const query: any = { _id: id };
@@ -154,7 +166,6 @@ export async function togglePublish(id: string, published: boolean) {
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
     revalidatePath('/dashboard/admin/posts');
-    // revalidateTag('posts');
 
     return { success: true };
 }
@@ -185,24 +196,12 @@ export async function getPostBySlug(slug: string) {
 }
 
 export async function getDashboardStats() {
-    const { userId } = await auth();
+    const userId = await getAuthUser();
     if (!userId) throw new Error("Unauthorized");
 
-    const isAdmin = await checkAdmin(userId);
     await dbConnect();
-
-    // For Admin, total means all AI posts + their own posts (or just all?)
-    // User requested "admin dashboard... jaha se ai se genrated blog ko edit kr ske"
-    // So for admin view, maybe we show global stats or just AI stats.
-    // Let's stick to the current user's stats for now, but the Admin Panel page will have its own logic.
-
-    const total = await Post.countDocuments({
-        authorId: userId
-    });
-    const published = await Post.countDocuments({
-        authorId: userId,
-        published: true
-    });
+    const total = await Post.countDocuments({ authorId: userId });
+    const published = await Post.countDocuments({ authorId: userId, published: true });
     const drafts = total - published;
 
     return { total, published, drafts };
