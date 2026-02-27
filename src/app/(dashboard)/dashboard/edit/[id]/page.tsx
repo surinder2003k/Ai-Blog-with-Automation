@@ -14,8 +14,14 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     await dbConnect()
     const post = await Post.findById(id)
 
-    if (!post || (post.authorId !== userId && post.authorId !== "system-ai-automated")) {
-        notFound()
+    if (!post) {
+        return <div className="p-10 bg-red-50 text-red-600 rounded-lg">Post with ID {id} not found in DB.</div>
+    }
+
+    if (post.authorId !== userId && post.authorId !== "system-ai-automated") {
+        return <div className="p-10 bg-yellow-50 text-yellow-600 rounded-lg">
+            Unauthorized. Post Author: {post.authorId}, Current User: {userId}
+        </div>
     }
 
     return (
