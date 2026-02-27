@@ -109,6 +109,10 @@ export function PostForm({ initialData, isEditing = false }: PostFormProps) {
         try {
             const result = await generateBlogPost(aiPrompt)
             if (result.success && result.data) {
+                // Debug: Check what keys we got
+                const keys = Object.keys(result.data).join(', ');
+                toast.info(`AI Response keys: ${keys}`);
+
                 const { title, content, excerpt, category, tags, imageSearchKeyword } = result.data
                 form.setValue("title", title)
                 form.setValue("content", content)
