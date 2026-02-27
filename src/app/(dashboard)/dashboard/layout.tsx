@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { SignOutButton, UserButton, useUser } from "@clerk/nextjs"
+import { isMasterAdmin } from "@/actions/adminAuth"
 import {
     LayoutDashboard,
     FileText,
@@ -13,7 +14,7 @@ import {
     ChevronLeft,
     ShieldCheck
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
@@ -33,7 +34,13 @@ export default function DashboardLayout({
     const pathname = usePathname()
     const [isMobileOpen, setIsMobileOpen] = useState(false)
     const { user } = useUser()
-    const isAdmin = user?.id === ADMIN_ID
+    const [isMaster, setIsMaster] = useState(false)
+
+    useEffect(() => {
+        isMasterAdmin().then(setIsMaster)
+    }, [])
+
+    const isAdmin = isMaster || user?.id === ADMIN_ID
 
     const NavContent = () => {
         return (

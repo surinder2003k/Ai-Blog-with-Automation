@@ -48,7 +48,11 @@ const PostSchema = z.object({
 
 const ADMIN_USER_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
 
+import { isMasterAdmin } from './adminAuth';
+
 async function checkAdmin(userId: string | null) {
+    const isMaster = await isMasterAdmin();
+    if (isMaster) return true;
     return userId && userId === ADMIN_USER_ID;
 }
 

@@ -30,6 +30,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { SearchInput } from "@/components/blog/SearchInput"
 import { Suspense } from "react"
+import { isMasterAdmin } from "@/actions/adminAuth"
 
 export default async function AdminPostsPage({
     searchParams
@@ -38,8 +39,9 @@ export default async function AdminPostsPage({
 }) {
     const { userId } = await auth()
     const ADMIN_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+    const isMaster = await isMasterAdmin();
 
-    if (!userId || userId !== ADMIN_ID) {
+    if (!isMaster && (!userId || userId !== ADMIN_ID)) {
         redirect("/dashboard")
     }
 

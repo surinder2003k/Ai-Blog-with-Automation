@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState, useEffect } from "react"
 import { UserButton, SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs"
 import { ModeToggle } from "./ModeToggle"
 import { Button } from "@/components/ui/button"
@@ -20,9 +21,16 @@ const navLinks = [
     { name: "Blog", href: "/blog", icon: BookOpen },
 ]
 
+import { isMasterAdmin } from "@/actions/adminAuth"
+
 export function Navbar() {
     const pathname = usePathname()
     const { user } = useUser()
+    const [isMaster, setIsMaster] = useState(false)
+
+    useEffect(() => {
+        isMasterAdmin().then(setIsMaster)
+    }, [])
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,7 +58,7 @@ export function Navbar() {
 
                 <div className="flex items-center gap-2 md:gap-4">
                     <SignedIn>
-                        {user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID && (
+                        {(isMaster || user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID) && (
                             <Button variant="ghost" size="sm" asChild className="hidden md:flex text-purple-600 hover:text-purple-700 hover:bg-purple-50">
                                 <Link href="/dashboard/admin/posts">
                                     <ShieldCheck className="mr-2 h-4 w-4" />
@@ -68,8 +76,16 @@ export function Navbar() {
                     </SignedIn>
 
                     <SignedOut>
+                        {isMaster && (
+                            <Button variant="ghost" size="sm" asChild className="hidden md:flex text-purple-600 hover:text-purple-700 hover:bg-purple-50 mr-2">
+                                <Link href="/dashboard/admin/posts">
+                                    <ShieldCheck className="mr-2 h-4 w-4" />
+                                    Admin Manager
+                                </Link>
+                            </Button>
+                        )}
                         <SignInButton mode="modal">
-                            <Button size="sm">Login</Button>
+                            <Button variant="outline" size="sm">Sign In</Button>
                         </SignInButton>
                     </SignedOut>
 
