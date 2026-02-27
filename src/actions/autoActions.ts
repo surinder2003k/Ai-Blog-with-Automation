@@ -24,8 +24,9 @@ export async function automateTrendingPosts() {
 
     try {
         // 1. Get Trending Topics (AI simulation of trending news in Feb 2026)
-        const topicPrompt = `As an expert trend analyst for February 2026, provide 2 specific and trending tech/AI topics that would make viral blog posts today. 
+        const topicPrompt = `As an expert trend analyst for February 2026, provide EXACTLY 2 distinct and trending tech/AI topics that would make viral blog posts today. 
         Focus on real innovations like: Agentic AI, Autonomous Mobility, SLMs, or new gadget leaks.
+        Ensure both topics are unique and interesting.
         Return as JSON: { "topics": ["topic 1", "topic 2"] }`;
 
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
