@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -87,13 +87,22 @@ export function PostForm({ initialData, isEditing = false }: PostFormProps) {
             if (isEditing) {
                 await updatePost(initialData._id, formattedValues)
                 toast.success("Post updated successfully!")
+                // Redirect back to wherever we came from — admin panel or user dashboard
+                const referrer = document.referrer
+                if (referrer.includes('/dashboard/admin')) {
+                    router.push("/dashboard/admin/posts")
+                } else {
+                    router.push("/dashboard/posts")
+                }
+                router.refresh()
             } else {
                 await createPost(formattedValues)
                 toast.success("Post created successfully!")
+                router.push("/dashboard/posts")
             }
-            router.push("/dashboard/posts")
-        } catch (error) {
-            toast.error("Something went wrong. Please try again.")
+        } catch (error: any) {
+            console.error("PostForm error:", error)
+            toast.error(error?.message || "Something went wrong. Please try again.")
         }
     }
 

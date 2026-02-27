@@ -58,7 +58,7 @@ export async function getAuthorNames(authorIds: string[]) {
 const PostSchema = z.object({
     title: z.string().min(1, "Title is required"),
     content: z.string().min(1, "Content is required"),
-    excerpt: z.string().max(160, "Excerpt must be under 160 characters"),
+    excerpt: z.string().max(160, "Excerpt must be under 160 characters").optional().default(''),
     image: z.string().url().optional().or(z.literal('')),
     category: z.string().default('Uncategorized'),
     tags: z.array(z.string()).default([]),
