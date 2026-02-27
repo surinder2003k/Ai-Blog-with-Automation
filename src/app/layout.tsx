@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description: "A modern, AI-powered personal blog built with Next.js 15, Clerk, and Gemini AI.",
 };
 
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +32,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning generic-font-families="sans-serif">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground flex flex-col`}
         >
           <ThemeProvider
             attribute="class"
@@ -37,7 +40,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
             <Toaster richColors position="top-center" />
           </ThemeProvider>
         </body>

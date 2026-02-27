@@ -67,6 +67,7 @@ export default async function DashboardPostsPage({
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead className="w-[80px]">Image</TableHead>
                             <TableHead className="w-[40%]">Title</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Category</TableHead>
@@ -78,6 +79,21 @@ export default async function DashboardPostsPage({
                         {posts.length > 0 ? (
                             posts.map((post: any) => (
                                 <TableRow key={post._id} className="hover:bg-muted/30 transition-colors">
+                                    <TableCell>
+                                        <div className="w-12 h-12 rounded-lg overflow-hidden border bg-muted shrink-0">
+                                            {post.image ? (
+                                                <img
+                                                    src={post.image}
+                                                    alt={post.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground uppercase">
+                                                    NI
+                                                </div>
+                                            )}
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="font-medium">
                                         <div className="flex flex-col">
                                             <span className="line-clamp-1">{post.title}</span>
@@ -148,7 +164,7 @@ export default async function DashboardPostsPage({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-40 text-center text-muted-foreground">
+                                <TableCell colSpan={6} className="h-40 text-center text-muted-foreground">
                                     No posts yet. Click "New Post" to start blogging!
                                 </TableCell>
                             </TableRow>

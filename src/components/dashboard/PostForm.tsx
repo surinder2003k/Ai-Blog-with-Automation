@@ -317,8 +317,20 @@ export function PostForm({ initialData, isEditing = false }: PostFormProps) {
                                         <FormItem>
                                             <FormLabel>Feature Image URL</FormLabel>
                                             <FormControl>
-                                                <div className="flex gap-2">
+                                                <div className="space-y-4">
                                                     <Input placeholder="https://unsplash.com/..." {...field} />
+                                                    {field.value && (
+                                                        <div className="relative aspect-video rounded-xl overflow-hidden border shadow-sm group">
+                                                            <img
+                                                                src={field.value}
+                                                                alt="Preview"
+                                                                className="object-cover w-full h-full"
+                                                            />
+                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <p className="text-white text-xs font-medium">Image Preview</p>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </FormControl>
                                             <FormDescription>Link to an Unsplash or custom image</FormDescription>

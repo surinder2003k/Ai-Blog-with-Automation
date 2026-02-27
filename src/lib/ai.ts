@@ -10,12 +10,12 @@ export async function generateBlogPost(userPrompt: string) {
         };
     }
 
-    const prompt = `Write an engaging, SEO-friendly blog post in a mix of Hindi and English (Hinglish) or pure English as suitable for a tech/lifestyle audience about: "${userPrompt}".
+    const prompt = `Write an engaging, SEO-friendly blog post in clear, professional English for a tech/lifestyle audience about: "${userPrompt}".
   
   Please provide the output strictly as a JSON object with the following structure:
   {
     "title": "Engaging Title",
-    "content": "Full markdown content (800-1500 words). Use markdown headings, lists, and formatting. Include a mix of English and Hindi where natural.",
+    "content": "Full markdown content (800-1500 words). Use markdown headings, lists, and formatting. The content must be entirely in English.",
     "excerpt": "A short, catchy summary of the post (max 160 characters).",
     "category": "One suitable category (e.g., Tech, Lifestyle, Coding, Travel)",
     "tags": ["tag1", "tag2", "tag3", "tag4"],
