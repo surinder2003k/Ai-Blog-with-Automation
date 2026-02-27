@@ -5,6 +5,14 @@ import { usePathname } from "next/navigation"
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 import { ModeToggle } from "./ModeToggle"
 import { Button } from "@/components/ui/button"
+import { LayoutDashboard, BookOpen, Home, Menu } from "lucide-react"
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 
 const navLinks = [
@@ -89,8 +97,8 @@ export function Navbar() {
                                                         key={link.href}
                                                         href={link.href}
                                                         className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-lg font-medium transition-all ${isActive
-                                                                ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
-                                                                : "text-muted-foreground hover:bg-muted"
+                                                            ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
+                                                            : "text-muted-foreground hover:bg-muted"
                                                             }`}
                                                     >
                                                         <link.icon className={`h-5 w-5 ${isActive ? "text-indigo-600" : ""}`} />
@@ -104,8 +112,8 @@ export function Navbar() {
                                                     <Link
                                                         href="/dashboard"
                                                         className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-lg font-medium transition-all ${pathname.startsWith("/dashboard")
-                                                                ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
-                                                                : "text-muted-foreground hover:bg-muted"
+                                                            ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
+                                                            : "text-muted-foreground hover:bg-muted"
                                                             }`}
                                                     >
                                                         <LayoutDashboard className={`h-5 w-5 ${pathname.startsWith("/dashboard") ? "text-indigo-600" : ""}`} />
