@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation"
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 import { ModeToggle } from "./ModeToggle"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, PenTool, BookOpen, Home } from "lucide-react"
+import { LayoutDashboard, PenTool, BookOpen, Home, Menu } from "lucide-react"
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 
 const navLinks = [
     { name: "Home", href: "/", icon: Home },
@@ -39,7 +46,7 @@ export function Navbar() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4">
                     <SignedIn>
                         <Button variant="ghost" size="sm" asChild className="hidden md:flex">
                             <Link href="/dashboard">
@@ -57,6 +64,48 @@ export function Navbar() {
                     </SignedOut>
 
                     <ModeToggle />
+
+                    {/* Mobile Menu */}
+                    <div className="md:hidden">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Menu className="h-5 w-5" />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                                <SheetHeader>
+                                    <SheetTitle className="text-left text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent">
+                                        AI Blog
+                                    </SheetTitle>
+                                </SheetHeader>
+                                <div className="grid gap-4 py-8">
+                                    {navLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className={`flex items-center gap-3 text-lg font-medium transition-colors hover:text-indigo-600 ${pathname === link.href ? "text-indigo-600" : "text-muted-foreground"
+                                                }`}
+                                        >
+                                            <link.icon className="h-5 w-5" />
+                                            {link.name}
+                                        </Link>
+                                    ))}
+                                    <SignedIn>
+                                        <Link
+                                            href="/dashboard"
+                                            className={`flex items-center gap-3 text-lg font-medium transition-colors hover:text-indigo-600 ${pathname.startsWith("/dashboard") ? "text-indigo-600" : "text-muted-foreground"
+                                                }`}
+                                        >
+                                            <LayoutDashboard className="h-5 w-5" />
+                                            Dashboard
+                                        </Link>
+                                    </SignedIn>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
                 </div>
             </div>
         </nav>
