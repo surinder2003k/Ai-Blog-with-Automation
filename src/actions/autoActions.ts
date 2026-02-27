@@ -82,7 +82,7 @@ export async function automateTrendingPosts() {
 
         revalidatePath('/', 'layout');
         revalidatePath('/blog', 'page');
-        revalidateTag('posts');
+        // revalidateTag('posts'); // Removing due to Next.js 16 build error
 
         return { success: true, results };
     } catch (error: any) {
