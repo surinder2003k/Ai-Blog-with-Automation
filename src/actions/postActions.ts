@@ -50,7 +50,10 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
     const slug = slugify(validatedData.title, { lower: true, strict: true });
 
     const post = await Post.findOneAndUpdate(
-        { _id: id, authorId: userId },
+        {
+            _id: id,
+            authorId: { $in: [userId, "system-ai-automated"] }
+        },
         { ...validatedData, slug, updatedAt: new Date() },
         { new: true }
     );
@@ -69,7 +72,10 @@ export async function deletePost(id: string) {
     if (!userId) throw new Error("Unauthorized");
 
     await dbConnect();
-    await Post.findOneAndDelete({ _id: id, authorId: userId });
+    await Post.findOneAndDelete({
+        _id: id,
+        authorId: { $in: [userId, "system-ai-automated"] }
+    });
 
     revalidatePath('/');
     revalidatePath('/blog');
@@ -84,7 +90,13 @@ export async function togglePublish(id: string, published: boolean) {
     if (!userId) throw new Error("Unauthorized");
 
     await dbConnect();
-    await Post.findOneAndUpdate({ _id: id, authorId: userId }, { published });
+    await Post.findOneAndUpdate(
+        {
+            _id: id,
+            authorId: { $in: [userId, "system-ai-automated"] }
+        },
+        { published }
+    );
 
     revalidatePath('/');
     revalidatePath('/blog');
@@ -123,8 +135,13 @@ export async function getDashboardStats() {
     if (!userId) throw new Error("Unauthorized");
 
     await dbConnect();
-    const total = await Post.countDocuments({ authorId: userId });
-    const published = await Post.countDocuments({ authorId: userId, published: true });
+    const total = await Post.countDocuments({
+        authorId: { $in: [userId, "system-ai-automated"] }
+    });
+    const published = await Post.countDocuments({
+        authorId: { $in: [userId, "system-ai-automated"] },
+        published: true
+    });
     const drafts = total - published;
 
     return { total, published, drafts };

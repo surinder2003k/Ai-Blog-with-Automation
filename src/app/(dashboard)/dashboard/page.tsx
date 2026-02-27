@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, CheckCircle, Clock, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AutomateButton } from "@/components/dashboard/AutomateButton"
+import { AutomationTimer } from "@/components/dashboard/AutomationTimer"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -49,6 +50,8 @@ export default async function DashboardPage() {
                     </Button>
                 </div>
             </div>
+
+            <AutomationTimer />
 
             <div className="grid gap-6 md:grid-cols-3">
                 {statCards.map((stat) => (
