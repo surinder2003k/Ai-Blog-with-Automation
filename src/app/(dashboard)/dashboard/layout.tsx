@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { SignOutButton, UserButton } from "@clerk/nextjs"
+import { SignOutButton, UserButton, useUser } from "@clerk/nextjs"
 import {
     LayoutDashboard,
     FileText,
@@ -10,7 +10,8 @@ import {
     LogOut,
     Home,
     Menu,
-    ChevronLeft
+    ChevronLeft,
+    ShieldCheck
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,8 @@ const sidebarLinks = [
     { name: "Create Post", href: "/dashboard/create", icon: PlusCircle },
 ]
 
+const ADMIN_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+
 export default function DashboardLayout({
     children,
 }: {
@@ -29,53 +32,74 @@ export default function DashboardLayout({
 }) {
     const pathname = usePathname()
     const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const { user } = useUser()
+    const isAdmin = user?.id === ADMIN_ID
 
-    const NavContent = () => (
-        <div className="flex flex-col h-full py-6">
-            <div className="px-6 mb-10">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                        <LayoutDashboard className="w-5 h-5" />
-                    </div>
-                    <span>AI Dashboard</span>
-                </Link>
-            </div>
+    const NavContent = () => {
+        return (
+            <div className="flex flex-col h-full py-6">
+                <div className="px-6 mb-10">
+                    <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                            <LayoutDashboard className="w-5 h-5" />
+                        </div>
+                        <span>AI Dashboard</span>
+                    </Link>
+                </div>
 
-            <nav className="flex-1 px-4 space-y-1">
-                {sidebarLinks.map((link) => {
-                    const Icon = link.icon
-                    const isActive = pathname === link.href
-                    return (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setIsMobileOpen(false)}
-                            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                <nav className="flex-1 px-4 space-y-1">
+                    {sidebarLinks.map((link) => {
+                        const Icon = link.icon
+                        const isActive = pathname === link.href
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setIsMobileOpen(false)}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
                                     ? "bg-indigo-600/10 text-indigo-600 dark:text-indigo-400"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                }`}
-                        >
-                            <Icon className="w-4 h-4" />
-                            {link.name}
-                        </Link>
-                    )
-                })}
-            </nav>
+                                    }`}
+                            >
+                                <Icon className="w-4 h-4" />
+                                {link.name}
+                            </Link>
+                        )
+                    })}
 
-            <div className="px-4 mt-auto pt-6 border-t font-medium">
-                <Link
-                    href="/"
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                    <Home className="w-4 h-4" />
-                    Back to Site
-                </Link>
-                <div className="mt-4 px-3 flex items-center gap-3">
-                    <UserButton afterSignOutUrl="/" showName />
+                    {isAdmin && (
+                        <div className="pt-4 mt-4 border-t border-border/50">
+                            <p className="px-3 mb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Administration</p>
+                            <Link
+                                href="/dashboard/admin/posts"
+                                onClick={() => setIsMobileOpen(false)}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === "/dashboard/admin/posts"
+                                    ? "bg-purple-600/10 text-purple-600 dark:text-purple-400"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    }`}
+                            >
+                                <ShieldCheck className="w-4 h-4" />
+                                AI Post Manager
+                            </Link>
+                        </div>
+                    )}
+                </nav>
+
+                <div className="px-4 mt-auto pt-6 border-t font-medium">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    >
+                        <Home className="w-4 h-4" />
+                        Back to Site
+                    </Link>
+                    <div className="mt-4 px-3 flex items-center gap-3">
+                        <UserButton afterSignOutUrl="/" showName />
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 
     return (
         <div className="flex min-h-screen bg-muted/30">

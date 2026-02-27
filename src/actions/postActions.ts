@@ -46,6 +46,12 @@ const PostSchema = z.object({
     published: z.boolean().default(false),
 });
 
+const ADMIN_USER_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+
+async function checkAdmin(userId: string | null) {
+    return userId && userId === ADMIN_USER_ID;
+}
+
 export async function createPost(data: z.infer<typeof PostSchema>) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
@@ -73,16 +79,19 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    const isAdmin = await checkAdmin(userId);
     await dbConnect();
 
     const validatedData = PostSchema.parse(data);
     const slug = slugify(validatedData.title, { lower: true, strict: true });
 
+    const query: any = { _id: id };
+    if (!isAdmin) {
+        query.authorId = userId;
+    }
+
     const post = await Post.findOneAndUpdate(
-        {
-            _id: id,
-            authorId: userId
-        },
+        query,
         { ...validatedData, slug, updatedAt: new Date() },
         { new: true }
     );
@@ -91,6 +100,7 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
 
     revalidatePath(`/blog/${slug}`);
     revalidatePath('/dashboard/posts');
+    revalidatePath('/dashboard/admin/posts');
     // revalidateTag('posts');
 
     return { success: true, data: JSON.parse(JSON.stringify(post)) };
@@ -100,15 +110,20 @@ export async function deletePost(id: string) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    const isAdmin = await checkAdmin(userId);
     await dbConnect();
-    await Post.findOneAndDelete({
-        _id: id,
-        authorId: userId
-    });
+
+    const query: any = { _id: id };
+    if (!isAdmin) {
+        query.authorId = userId;
+    }
+
+    await Post.findOneAndDelete(query);
 
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
+    revalidatePath('/dashboard/admin/posts');
     // revalidateTag('posts');
 
     return { success: true };
@@ -118,18 +133,23 @@ export async function togglePublish(id: string, published: boolean) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    const isAdmin = await checkAdmin(userId);
     await dbConnect();
+
+    const query: any = { _id: id };
+    if (!isAdmin) {
+        query.authorId = userId;
+    }
+
     await Post.findOneAndUpdate(
-        {
-            _id: id,
-            authorId: userId
-        },
+        query,
         { published }
     );
 
     revalidatePath('/');
     revalidatePath('/blog');
     revalidatePath('/dashboard/posts');
+    revalidatePath('/dashboard/admin/posts');
     // revalidateTag('posts');
 
     return { success: true };
@@ -164,7 +184,14 @@ export async function getDashboardStats() {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
+    const isAdmin = await checkAdmin(userId);
     await dbConnect();
+
+    // For Admin, total means all AI posts + their own posts (or just all?)
+    // User requested "admin dashboard... jaha se ai se genrated blog ko edit kr ske"
+    // So for admin view, maybe we show global stats or just AI stats.
+    // Let's stick to the current user's stats for now, but the Admin Panel page will have its own logic.
+
     const total = await Post.countDocuments({
         authorId: userId
     });

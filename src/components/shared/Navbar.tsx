@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
+import { UserButton, SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs"
 import { ModeToggle } from "./ModeToggle"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, BookOpen, Home, Menu } from "lucide-react"
+import { LayoutDashboard, BookOpen, Home, Menu, ShieldCheck } from "lucide-react"
 import {
     Sheet,
     SheetContent,
@@ -22,6 +22,7 @@ const navLinks = [
 
 export function Navbar() {
     const pathname = usePathname()
+    const { user } = useUser()
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -49,6 +50,14 @@ export function Navbar() {
 
                 <div className="flex items-center gap-2 md:gap-4">
                     <SignedIn>
+                        {user?.id === process.env.NEXT_PUBLIC_ADMIN_USER_ID && (
+                            <Button variant="ghost" size="sm" asChild className="hidden md:flex text-purple-600 hover:text-purple-700 hover:bg-purple-50">
+                                <Link href="/dashboard/admin/posts">
+                                    <ShieldCheck className="mr-2 h-4 w-4" />
+                                    Admin
+                                </Link>
+                            </Button>
+                        )}
                         <Button variant="ghost" size="sm" asChild className="hidden md:flex">
                             <Link href="/dashboard">
                                 <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -97,8 +106,8 @@ export function Navbar() {
                                                         key={link.href}
                                                         href={link.href}
                                                         className={`flex items-center gap-6 px-6 py-5 rounded-[2rem] text-xl font-bold transition-all duration-300 ${isActive
-                                                                ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
-                                                                : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
+                                                            ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
+                                                            : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
                                                             }`}
                                                     >
                                                         <link.icon className={`h-6 w-6 ${isActive ? "text-indigo-600" : "group-hover:text-foreground"}`} />
@@ -112,8 +121,8 @@ export function Navbar() {
                                                     <Link
                                                         href="/dashboard"
                                                         className={`flex items-center gap-6 px-6 py-5 rounded-[2rem] text-xl font-bold transition-all duration-300 ${pathname.startsWith("/dashboard")
-                                                                ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
-                                                                : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
+                                                            ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
+                                                            : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
                                                             }`}
                                                     >
                                                         <LayoutDashboard className={`h-6 w-6 ${pathname.startsWith("/dashboard") ? "text-indigo-600" : ""}`} />
