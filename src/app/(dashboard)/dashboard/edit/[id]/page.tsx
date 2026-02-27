@@ -1,24 +1,29 @@
-import { getPosts } from "@/actions/postActions"
 import { PostForm } from "@/components/dashboard/PostForm"
 import dbConnect from "@/lib/db"
 import Post from "@/models/Post"
 import { auth } from "@clerk/nextjs/server"
-import { notFound, redirect } from "next/navigation"
-
+import { redirect } from "next/navigation"
 import { isMasterAdmin } from "@/actions/adminAuth"
 
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const { userId } = await auth()
     const isMaster = await isMasterAdmin()
     const ADMIN_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID
+
+    // Safely get Clerk userId — may be null if master admin is logged in without Clerk
+    let userId: string | null = null
+    try {
+        const session = await auth()
+        userId = session.userId
+    } catch {
+        // No Clerk session — perfectly fine if master admin cookie is set
+    }
 
     if (!isMaster && !userId) redirect("/")
 
     await dbConnect()
 
-    // Admin or Master Admin can fetch any post (or specifically AI posts)
-    // For now, let's allow them to fetch any post by ID for editing
+    // Admin or Master Admin can fetch any post
     const isAdmin = isMaster || (userId && userId === ADMIN_ID)
 
     const query: any = { _id: id }
@@ -27,6 +32,10 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     }
 
     const post = await Post.findOne(query)
+
+    if (!post) {
+        redirect("/dashboard")
+    }
 
     return (
         <div className="space-y-6">

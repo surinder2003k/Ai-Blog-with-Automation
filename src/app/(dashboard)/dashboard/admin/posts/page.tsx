@@ -1,4 +1,4 @@
-import { getPosts, deletePost, togglePublish, getAuthorNames } from "@/actions/postActions"
+import { getPosts, deletePost, togglePublish } from "@/actions/postActions"
 import { auth } from "@clerk/nextjs/server"
 import {
     Table,
@@ -37,9 +37,17 @@ export default async function AdminPostsPage({
 }: {
     searchParams: Promise<{ search?: string }>
 }) {
-    const { userId } = await auth()
     const ADMIN_ID = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
     const isMaster = await isMasterAdmin();
+
+    // Safely get Clerk userId — master admin may not have a Clerk session
+    let userId: string | null = null
+    try {
+        const session = await auth()
+        userId = session.userId
+    } catch {
+        // No Clerk session — fine when master_admin_session cookie is set
+    }
 
     if (!isMaster && (!userId || userId !== ADMIN_ID)) {
         redirect("/dashboard")
