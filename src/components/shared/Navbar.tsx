@@ -75,48 +75,48 @@ export function Navbar() {
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0 border-l border-indigo-500/10 backdrop-blur-xl bg-background/95">
+                            <SheetContent side="right" className="w-[300px] sm:w-[380px] p-0 border-l border-indigo-500/20 backdrop-blur-2xl bg-background/98">
                                 <div className="flex flex-col h-full">
-                                    <SheetHeader className="p-6 pb-4">
-                                        <SheetTitle className="text-left text-2xl font-bold bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent">
+                                    <SheetHeader className="p-8 pb-6">
+                                        <SheetTitle className="text-left text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent tracking-tight">
                                             AI Blog
                                         </SheetTitle>
-                                        <p className="text-left text-xs text-muted-foreground mt-1">Premium AI-Powered Insights</p>
+                                        <p className="text-left text-sm text-muted-foreground mt-2 font-medium opacity-80">Premium AI-Powered Insights</p>
                                     </SheetHeader>
 
-                                    <div className="px-4">
-                                        <Separator className="opacity-50" />
+                                    <div className="px-8">
+                                        <Separator className="opacity-20" />
                                     </div>
 
-                                    <div className="flex-1 px-4 py-6">
-                                        <div className="grid gap-2">
+                                    <div className="flex-1 px-6 py-8">
+                                        <div className="grid gap-4">
                                             {navLinks.map((link) => {
                                                 const isActive = pathname === link.href;
                                                 return (
                                                     <Link
                                                         key={link.href}
                                                         href={link.href}
-                                                        className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-lg font-medium transition-all ${isActive
-                                                            ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
-                                                            : "text-muted-foreground hover:bg-muted"
+                                                        className={`flex items-center gap-6 px-6 py-5 rounded-[2rem] text-xl font-bold transition-all duration-300 ${isActive
+                                                                ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
+                                                                : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
                                                             }`}
                                                     >
-                                                        <link.icon className={`h-5 w-5 ${isActive ? "text-indigo-600" : ""}`} />
+                                                        <link.icon className={`h-6 w-6 ${isActive ? "text-indigo-600" : "group-hover:text-foreground"}`} />
                                                         {link.name}
                                                     </Link>
                                                 );
                                             })}
 
                                             <SignedIn>
-                                                <div className="mt-2 pt-2 border-t border-dashed">
+                                                <div className="mt-6 pt-6 border-t border-dashed border-muted/50">
                                                     <Link
                                                         href="/dashboard"
-                                                        className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-lg font-medium transition-all ${pathname.startsWith("/dashboard")
-                                                            ? "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10"
-                                                            : "text-muted-foreground hover:bg-muted"
+                                                        className={`flex items-center gap-6 px-6 py-5 rounded-[2rem] text-xl font-bold transition-all duration-300 ${pathname.startsWith("/dashboard")
+                                                                ? "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 shadow-lg shadow-indigo-500/5 translate-x-1"
+                                                                : "text-muted-foreground hover:bg-muted/80 hover:translate-x-1 hover:text-foreground"
                                                             }`}
                                                     >
-                                                        <LayoutDashboard className={`h-5 w-5 ${pathname.startsWith("/dashboard") ? "text-indigo-600" : ""}`} />
+                                                        <LayoutDashboard className={`h-6 w-6 ${pathname.startsWith("/dashboard") ? "text-indigo-600" : ""}`} />
                                                         Dashboard
                                                     </Link>
                                                 </div>
@@ -124,10 +124,10 @@ export function Navbar() {
                                         </div>
                                     </div>
 
-                                    <div className="p-6 mt-auto">
-                                        <div className="rounded-2xl bg-indigo-500/5 p-4 border border-indigo-500/10">
-                                            <p className="text-xs font-medium text-center text-muted-foreground">
-                                                Version 1.0.4 • Latest Update
+                                    <div className="p-8 mt-auto">
+                                        <div className="rounded-[2rem] bg-indigo-500/5 p-6 border border-indigo-500/10 backdrop-blur-sm">
+                                            <p className="text-[10px] font-black text-center text-muted-foreground/60 tracking-[0.2em] uppercase">
+                                                AI BLOG • DESIGNED FOR YOU
                                             </p>
                                         </div>
                                     </div>
