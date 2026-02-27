@@ -52,7 +52,7 @@ export async function updatePost(id: string, data: z.infer<typeof PostSchema>) {
     const post = await Post.findOneAndUpdate(
         {
             _id: id,
-            authorId: { $in: [userId, "system-ai-automated"] }
+            authorId: userId
         },
         { ...validatedData, slug, updatedAt: new Date() },
         { new: true }
@@ -74,7 +74,7 @@ export async function deletePost(id: string) {
     await dbConnect();
     await Post.findOneAndDelete({
         _id: id,
-        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
+        authorId: userId
     });
 
     revalidatePath('/');
@@ -93,7 +93,7 @@ export async function togglePublish(id: string, published: boolean) {
     await Post.findOneAndUpdate(
         {
             _id: id,
-            authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
+            authorId: userId
         },
         { published }
     );
@@ -106,12 +106,13 @@ export async function togglePublish(id: string, published: boolean) {
     return { success: true };
 }
 
-export async function getPosts(filters: { category?: string; search?: string; published?: boolean } = {}) {
+export async function getPosts(filters: { category?: string; search?: string; published?: boolean; authorId?: string } = {}) {
     await dbConnect();
 
     const query: any = {};
     if (filters.category) query.category = filters.category;
     if (filters.published !== undefined) query.published = filters.published;
+    if (filters.authorId) query.authorId = filters.authorId;
     if (filters.search) {
         query.$or = [
             { title: { $regex: filters.search, $options: 'i' } },
@@ -136,10 +137,10 @@ export async function getDashboardStats() {
 
     await dbConnect();
     const total = await Post.countDocuments({
-        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] }
+        authorId: userId
     });
     const published = await Post.countDocuments({
-        authorId: { $in: [userId, "system-ai-automated", "user_dummy_admin"] },
+        authorId: userId,
         published: true
     });
     const drafts = total - published;

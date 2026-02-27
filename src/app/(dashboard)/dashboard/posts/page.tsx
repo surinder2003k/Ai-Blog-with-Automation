@@ -41,7 +41,7 @@ export default async function DashboardPostsPage({
     if (!userId) redirect("/")
 
     const { search } = await searchParams
-    const posts = await getPosts({ search: search || "" })
+    const posts = await getPosts({ search: search || "", authorId: userId })
 
     return (
         <div className="space-y-8">
