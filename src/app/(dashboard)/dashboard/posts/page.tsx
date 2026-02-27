@@ -24,16 +24,24 @@ import {
     Trash2,
     Eye,
     CheckCircle,
-    XCircle
+    XCircle,
+    Search
 } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { SearchInput } from "@/components/blog/SearchInput"
+import { Suspense } from "react"
 
-export default async function DashboardPostsPage() {
+export default async function DashboardPostsPage({
+    searchParams
+}: {
+    searchParams: Promise<{ search?: string }>
+}) {
     const { userId } = await auth()
     if (!userId) redirect("/")
 
-    const posts = await getPosts()
+    const { search } = await searchParams
+    const posts = await getPosts({ search: search || "" })
 
     return (
         <div className="space-y-8">
@@ -42,12 +50,17 @@ export default async function DashboardPostsPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Your Posts</h1>
                     <p className="text-muted-foreground">Manage and organize your blog articles here.</p>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700" asChild>
-                    <Link href="/dashboard/create">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        New Post
-                    </Link>
-                </Button>
+                <div className="flex gap-3">
+                    <Suspense fallback={<div className="h-10 w-64 bg-muted animate-pulse rounded-md" />}>
+                        <SearchInput defaultValue={search} />
+                    </Suspense>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700" asChild>
+                        <Link href="/dashboard/create">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            New Post
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
