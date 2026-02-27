@@ -12,7 +12,10 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     if (!userId) redirect("/")
 
     await dbConnect()
-    const post = await Post.findOne({ _id: id, authorId: userId })
+    const post = await Post.findOne({
+        _id: id,
+        authorId: { $in: [userId, "system-ai-automated"] }
+    })
 
     if (!post) {
         notFound()
