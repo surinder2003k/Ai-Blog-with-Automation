@@ -4,8 +4,37 @@ import { revalidatePath /*, revalidateTag */ } from 'next/cache';
 import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
 import { z } from 'zod';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import slugify from 'slugify';
+
+export async function getAuthorNames(authorIds: string[]) {
+    const uniqueIds = [...new Set(authorIds)].filter(id =>
+        id && id !== "system-ai-automated" && id !== "user_dummy_admin"
+    );
+
+    const nameMap: Record<string, string> = {
+        "system-ai-automated": "AI Assistant",
+        "user_dummy_admin": "AI Assistant"
+    };
+
+    if (uniqueIds.length === 0) return nameMap;
+
+    try {
+        const client = await clerkClient();
+        const users = await client.users.getUserList({ userId: uniqueIds });
+
+        users.data.forEach(user => {
+            const name = [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+                user.emailAddresses[0]?.emailAddress?.split('@')[0] ||
+                "User";
+            nameMap[user.id] = name;
+        });
+    } catch (error) {
+        console.error("Error fetching author names:", error);
+    }
+
+    return nameMap;
+}
 
 const PostSchema = z.object({
     title: z.string().min(1, "Title is required"),

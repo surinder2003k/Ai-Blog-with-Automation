@@ -1,4 +1,4 @@
-import { getPosts } from "@/actions/postActions"
+import { getPosts, getAuthorNames } from "@/actions/postActions"
 import { PostCard } from "@/components/blog/PostCard"
 import { SearchInput } from "@/components/blog/SearchInput"
 import { Search } from "lucide-react"
@@ -15,6 +15,9 @@ export default async function BlogListPage({
         search: search || "",
         category: category || ""
     })
+
+    const authorIds = posts.map((post: any) => post.authorId)
+    const nameMap = await getAuthorNames(authorIds)
 
     return (
         <div className="space-y-12 max-w-7xl mx-auto">
@@ -41,7 +44,7 @@ export default async function BlogListPage({
             {posts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map((post: any) => (
-                        <PostCard key={post._id} post={post} />
+                        <PostCard key={post._id} post={post} authorName={nameMap[post.authorId]} />
                     ))}
                 </div>
             ) : (

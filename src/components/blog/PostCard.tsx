@@ -7,9 +7,13 @@ import { IPost } from "@/models/Post"
 
 interface PostCardProps {
     post: IPost
+    authorName?: string
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, authorName = "Author" }: PostCardProps) {
+    const isAi = post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin"
+    const displayAuthor = isAi ? "AI" : authorName
+
     return (
         <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-lg group">
             <Link href={`/blog/${post.slug}`} className="relative block aspect-video overflow-hidden">
@@ -43,7 +47,7 @@ export function PostCard({ post }: PostCardProps) {
             <CardFooter className="pt-0 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-medium text-indigo-600">
-                        {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI" : "Mohit"}
+                        {displayAuthor}
                     </span>
                     <span>•</span>
                     <span>{format(new Date(post.createdAt), "MMM d")}</span>

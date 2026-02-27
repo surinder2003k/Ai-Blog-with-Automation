@@ -1,8 +1,8 @@
-import { getPostBySlug } from "@/actions/postActions"
+import { getPostBySlug, getAuthorNames } from "@/actions/postActions"
 import { MarkdownRenderer } from "@/components/blog/MarkdownRenderer"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { Calendar, Tag, ChevronLeft } from "lucide-react"
+import { Calendar, Tag, ChevronLeft, User } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -31,6 +31,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         notFound()
     }
 
+    const nameMap = await getAuthorNames([post.authorId])
+    const authorName = nameMap[post.authorId] || "Unknown Author"
+    const isAi = post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin"
+
     return (
         <article className="max-w-4xl mx-auto space-y-10 py-6">
             <Link
@@ -49,13 +53,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 <div className="flex flex-wrap items-center gap-6 text-muted-foreground pt-2">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 font-bold border border-indigo-200/50">
-                            {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI" : "MK"}
+                            {isAi ? "AI" : authorName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm font-semibold text-foreground">
-                                {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI Assistant" : "Mohit"}
+                                {authorName}
                             </span>
-                            <span className="text-xs">Author @ AI Blog</span>
+                            <span className="text-xs">{isAi ? "System Bot" : "Author @ AI Blog"}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
