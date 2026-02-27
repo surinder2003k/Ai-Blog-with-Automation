@@ -40,12 +40,19 @@ export function PostCard({ post }: PostCardProps) {
                 <p className="text-muted-foreground line-clamp-3 text-sm">{post.excerpt}</p>
             </CardHeader>
 
-            <CardFooter className="pt-0">
+            <CardFooter className="pt-0 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="font-medium text-indigo-600">
+                        {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI" : "Mohit"}
+                    </span>
+                    <span>•</span>
+                    <span>{format(new Date(post.createdAt), "MMM d")}</span>
+                </div>
                 <Link
                     href={`/blog/${post.slug}`}
                     className="text-indigo-600 font-medium text-sm flex items-center group-hover:underline"
                 >
-                    Read More <ChevronRight className="w-4 h-4 ml-1" />
+                    Read <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
             </CardFooter>
         </Card>

@@ -7,13 +7,14 @@ import slugify from "slugify";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // High-quality category-based images from Unsplash
-const CATEGORY_IMAGES: Record<string, string> = {
-    Tech: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000",
-    AI: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000",
-    Coding: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1000",
-    Lifestyle: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=1000",
-    Gadgets: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=1000",
-    Default: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1000"
+// Keywords for dynamic Unsplash images
+const CATEGORY_KEYWORDS: Record<string, string> = {
+    Tech: "technology,innovation",
+    AI: "artificial intelligence,robot",
+    Coding: "programming,software",
+    Lifestyle: "modern lifestyle,minimal",
+    Gadgets: "gadgets,devices",
+    Default: "tech,innovation"
 };
 
 export async function automateTrendingPosts() {
@@ -65,9 +66,12 @@ export async function automateTrendingPosts() {
                     continue;
                 }
 
-                // Image Strategy: Using Unsplash category mapping
+                // Image Strategy: Using Unsplash Source for randomness based on keywords
                 const category = blogData.category || "Tech";
-                blogData.image = CATEGORY_IMAGES[category] || CATEGORY_IMAGES.Default;
+                const keyword = CATEGORY_KEYWORDS[category] || CATEGORY_KEYWORDS.Default;
+                // Using a timestamp and topic to ensure a unique-ish image per run
+                const salt = Math.floor(Math.random() * 1000);
+                blogData.image = `https://source.unsplash.com/featured/1200x600?${keyword},${salt}`;
 
                 // Create post with a system author
                 const post = await Post.create({

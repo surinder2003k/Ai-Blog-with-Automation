@@ -47,13 +47,24 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-6 text-muted-foreground pt-2">
-                    <div className="flex items-center gap-2">
-                        <Calendar className="w-5 h-5" />
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 font-bold border border-indigo-200/50">
+                            {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI" : "MK"}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-foreground">
+                                {post.authorId === "system-ai-automated" || post.authorId === "user_dummy_admin" ? "AI Assistant" : "Mohit"}
+                            </span>
+                            <span className="text-xs">Author @ AI Blog</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="w-4 h-4" />
                         {format(new Date(post.createdAt), "MMMM d, yyyy")}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Tag className="w-5 h-5" />
-                        {post.tags.join(", ")}
+                    <div className="flex items-center gap-2 text-sm">
+                        <Tag className="w-4 h-4" />
+                        {post.category}
                     </div>
                 </div>
             </header>
